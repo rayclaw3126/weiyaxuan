@@ -524,3 +524,15 @@ var S={user:null,cart:0,total:0};
 function go(sc,sub){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});document.getElementById(sc).classList.add('active');if(sub)switchTab(sub)}
 function switchTab(tab){var l=tab==='login';document.getElementById('tl').className='auth-tab'+(l?' on':'');document.getElementById('tr').className='auth-tab'+(!l?' on':'');document.getElementById('lf').style.display=l?'flex':'none';document.getElementById('rf').style.display=l?'none':'flex';document.getElementById('auth-h1').textContent=l?'欢迎回来':'创建账号';document.getElementById('auth-sub').textContent=l?'登录账号享受专属会员特权':'注册成为会员，即送100积分'}
 function doLogin(){var ph=document.getElementById('l-ph').value.trim(),pw=document.getElementById('l-pw').value.trim();if(!ph||!pw){t('请填写手机号和密码');return}S.user={name:'贵宾',phone:ph,pts:100};updateUI();go('app');nav('home');t('欢迎回来 d>le>
+function doRegister(){var nm=document.getElementById('r-nm').value.trim(),ph=document.getElementById('r-ph').value.trim(),pw=document.getElementById('r-pw').value.trim();if(!nm||!ph){t('请填写姓名和手机号');return}if(pw.length<6){t('密码至少6位');return}S.user={name:nm,phone:ph,pts:100};updateUI();go('app');nav('home');t('注册成功！已获赠100积分 🎁')}
+function updateUI(){var u=S.user,m=u.phone.replace(/(\d{3})\d+(\d{2})$/,'$1 **** $2');document.getElementById('mc-nm').textContent=u.name;document.getElementById('mc-ph').textContent=m;document.getElementById('pf-nm').textContent=u.name;document.getElementById('pf-ph').textContent=m;document.getElementById('pf-pt').textContent=u.pts;document.getElementById('pf-pt2').textContent=u.pts;document.getElementById('mc-pt').textContent=u.pts.toLocaleString();document.getElementById('mc-ptxt').textContent=u.pts+' / 500';document.getElementById('mc-fill').style.width=Math.min(100,Math.round(u.pts/500*100))+'%'}
+function doLogout(){S.user=null;go('splash')}
+function nav(pg){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active')});document.getElementById('pg-'+pg).classList.add('active');['home','menu','promo','profile'].forEach(function(x){var el=document.getElementById('nb-'+x);if(el)el.className='nb'+(x===pg?' on':'')})}
+function selR(el){el.parentNode.querySelectorAll('.ro').forEach(function(r){r.className='ro'});el.className='ro on'}
+function addCart(p,nm){S.cart++;S.total+=p;document.getElementById('cart-n').textContent=S.cart;document.getElementById('cart-am').textContent='$'+S.total;document.getElementById('cart').classList.add('show');t('已加入·'+nm+' $'+p)}
+function t(msg){var el=document.getElementById('toast');el.textContent=msg;el.className='toast show';clearTimeout(t._x);t._x=setTimeout(function(){el.className='toast'},2600)}
+document.getElementById('bk-dt').value=new Date().toISOString().split('T')[0];
+document.querySelectorAll('.cat').forEach(function(c){c.onclick=function(){this.parentNode.querySelectorAll('.cat').forEach(function(x){x.className='cat'});this.className='cat on'}});
+</script>
+</body>
+</html>
