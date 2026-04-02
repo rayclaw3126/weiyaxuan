@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>珍粤轩 · 后台管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--red:#8b1a1a;--red2:#5c0f0f;--gold:#c9a84c;--gold2:#e8cc7e;--bg:#f0f2f5;--white:#fff;--text:#1a1a2e;--text2:#6b7280;--green:#16a34a;--orange:#d97706;--shadow:0 2px 12px rgba(0,0,0,0.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--red2),var(--red))}
+.login-box{background:#fff;border-radius:20px;padding:36px 28px;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.login-logo{font-family:'Noto Serif SC';font-size:26px;color:var(--red2);letter-spacing:4px;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:28px}
+.lfi{margin-bottom:14px;text-align:left}
+.lfi label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px}
+.lfi input{width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none}
+.lfi input:focus{border-color:var(--red)}
+.login-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:'Noto Sans SC',sans-serif;cursor:pointer;margin-top:6px}
+.login-hint{font-size:11px;color:var(--text2);margin-top:14px}
+#main-screen{display:none}
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--red2);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-logo .cn{font-family:'Noto Serif SC';font-size:18px;color:var(--gold2);letter-spacing:3px}
+.sidebar-logo .sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px}
+.sidebar-nav{flex:1;padding:12px 0}
+.sn-item{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;color:rgba(255,255,255,0.6);font-size:13px;transition:all .2s;border-left:3px solid transparent}
+.sn-item:hover{color:#fff;background:rgba(255,255,255,0.05)}
+.sn-item.active{color:var(--gold2);background:rgba(201,168,76,0.1);border-left-color:var(--gold)}
+.sn-icon{font-size:18px;width:24px;text-align:center}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+.lo-btn{width:100%;padding:10px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);border:none;border-radius:8px;font-size:13px;font-family:'Noto Sans SC',sans-serif;cursor:pointer}
+.content{margin-left:220px;padding:24px;min-height:100vh}
+.page{display:none}.page.active{display:block}
+.page-title{font-family:'Noto Serif SC';font-size:22px;color:var(--red2);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.page-title::before{content:'';width:4px;height:22px;background:var(--gold);border-radius:2px;display:inline-block}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.stat-icon{font-size:28px;margin-bottom:10px}
+.stat-val{font-family:'Noto Serif SC';font-size:28px;color:var(--text)}
+.stat-label{font-size:12px;color:var(--text2);margin-top:3px}
+.stat-change{font-size:11px;color:var(--green);margin-top:6px}
+.table-wrap{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.table-header{padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:15px;font-weight:600}
+.add-btn{padding:8px 16px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-family:'Noto Sans SC',sans-serif;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:12px;color:var(--text2);font-weight:500;background:#fafafa;border-bottom:1px solid #f0f0f0}
+td{padding:13px 16px;font-size:13px;border-bottom:1px solid #f7f7f7;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.bg{background:#dcfce7;color:#16a34a}
+.bo{background:#fef3c7;color:#d97706}
+.br{background:#fee2e2;color:#dc2626}
+.bb{background:#dbeafe;color:#1d4ed8}
+.bgr{background:#f3f4f6;color:#6b7280}
+.action-btn{padding:5px 12px;border-radius:6px;font-size:11px;border:none;cursor:pointer;font-family:'Noto Sans SC',sans-serif;margin-right:4px}
+.bc{background:#dcfce7;color:#16a34a}
+.bca{background:#fee2e2;color:#dc2626}
+.be{background:#dbeafe;color:#1d4ed8}
+.form-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.form-card-title{font-size:14px;font-weight:600;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #f0f0f0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:12px;color:var(--text2)}
+.fg input,.fg select,.fg textarea{padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Noto Sans SC',sans-serif;outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--gold)}
+.fg textarea{resize:vertical;min-height:80px}
+.save-btn{padding:11px 28px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;margin-top:14px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;width:420px;max-width:90vw}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.modal-btns button{padding:9px 20px;border-radius:8px;font-size:13px;border:none;cursor:pointer;font-family:'Noto Sans SC',sans-serif}
+.btn-sec{background:#f3f4f6;color:var(--text2)}
+.btn-pri{background:var(--red);color:#fff}
+.toast{position:fixed;top:20px;right:20px;background:#1a1a2e;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:900px){.sidebar{width:60px}.sn-item span,.sidebar-logo .sub,.sidebar-logo .cn{display:none}.content{margin-left:60px}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</hea<body>
+<div class="toast" id="toast"></div>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">珍粤轩</div>
+    <div class="login-sub">餐厅后台管理系统</div>
+    <div class="lfi"><label>管理员账号</label><input type="text" id="adm-user" placeholder="admin"></div>
+    <div class="lfi"><label>密码</label><input type="password" id="adm-pw" placeholder="请输入密码"></div>
+    <button class="login-btn" onclick="doAdminLogin()">登录</button>
+    <div class="login-hint">默认密码：zhenyuexuan2025</div>
+  </div>
+</div>
+
+<div id="main-screen">
+  <div class="sidebar">
+    <div class="sidebar-logo"><div class="cn">珍粤轩</div><div class="sub">后台管理系统</div></div>
+    <div class="sidebar-nav">
+      <div class="sn-item active" onclick="showPage('dashboard',this)"><div class="sn-icon">📊</div><span>数据概览</span></div>
+      <div class="sn-item" onclick="showPage('bookings',this)"><div class="sn-icon">📅</div><span>预订管理</span></div>
+      <div class="sn-item" onclick="showPage('members',this)"><div class="sn-icon">👥</div><span>会员管理</span></div>
+      <div class="sn-item" onclick="showPage('menu',this)"><div class="sn-icon">🍽️</div><span>菜单管理</span></div>
+      <div class="sn-item" onclick="showPage('promos',this)"><div class="sn-icon">🎁</div><span>优惠活动</span></div>
+      <div class="sn-item" onclick="showPage('reviews',this)"><div class="sn-icon">⭐</div><span>评价管理</span></div>
+      <div class="sn-item" onclick="showPage('settings',this)"><div class="sn-icon">⚙️</div><span>系统设置</span></div>
+    </div>
+    <div class="sidebar-footer"><button class="lo-btn" onclick="doLogout()">🚪 退出登录</button></div>
+  </div>
+
+  <div class="content">
+    <div class="page active" id="pg-dashboard">
+      <div class="page-title">数据概览</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="s-book">0</div><div class="stat-label">今日预订</div><div class="stat-change">实时更新</div></div>
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-val" id="s-mem">0</div><div class="stat-label">注册会员</div><div class="stat-change">累计总数</div></div>
+        <div class="stat-card"><div class="stat-icon">🍽️</div><div class="stat-val" id="s-menu">0</div><div class="stat-label">菜品数量</div><div class="stat-change">上架中</div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">4.8</div><div class="stat-label">平均评分</div><div class="stat-change">128条评价</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="table-wrap">
+          <div class="table-header"><div class="table-title">最新预订</div><span class="badge bo" id="pending-count">待确认 0</span></div>
+          <table><tr><th>时间</th><th>姓名</th><th>人数</th><th>状态</th></tr><tbody id="dash-bookings"></tbody></table>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><div class="table-title">最新会员</div></div>
+          <table><tr><th>姓名</th><th>手机</th><th>积分</th><th>等级</th></tr><tbody id="dash-members"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="pg-bookings">
+      <div class="page-title">预订管理</div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">全部预订</div><button class="add-btn" onclick="addBookingModal()">+ 新增预订</button></div>
+        <table><tr><th>日期</th><th>时间</th><th>姓名</th><th>电话</th><th>人数</th><th>区域</th><th>备注</th><th>状态</th><th>操作</th></tr><tbody id="bookings-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-members">
+      <div class="page-title">会员管理</div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">会员列表</div><button class="add-btn" onclick="addMemberModal()">+ 手动添加</button></div>
+        <table><tr><th>姓名</th><th>手机</th><th>生日</th><th>积分</th><th>等级</th><th>注册日期</th><th>操作</th></tr><tbody id="members-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-menu">
+      <div class="page-title">菜单管理</div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">菜品列表</div><button class="add-btn" onclick="addMenuModal()">+ 新增菜品</button></div>
+        <table><tr><th>菜名</th><th>分类</th><th>价格</th><th>描述</th><th>状态</th><th>操作</th></tr><tbody id="menu-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-promos">
+      <div class="page-title">优惠活动</div>
+      <div class="form-card">
+        <div class="form-card-title">发布新优惠</div>
+        <div class="form-grid">
+          <div class="fg"><label>活动名称</label><input type="text" id="promo-title" placeholder="如：开业特惠"></div>
+          <div class="fg"><label>类型</label><select id="promo-type"><option>限时优惠</option><option>会员专属</option><option>周末活动</option><option>节日特惠</option></select></div>
+          <div class="fg"><label>开始日期</label><input type="date" id="promo-start"></div>
+          <div class="fg"><label>结束日期</label><input type="date" id="promo-end"></div>
+          <div class="fg" style="grid-column:1/-1"><label>活动详情</label><textarea id="promo-desc" placeholder="请输入活动详情..."></textarea></div>
+        </div>
+        <button class="save-btn" onclick="addPromo()">发布活动</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">活动列表</div></div>
+        <table><tr><th>活动名称</th><th>类型</th><th>有效期</th><th>状态</th><th>操作</th></tr><tbody id="promos-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-reviews">
+      <div class="page-title">评价管理</div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">顾客评价</div></div>
+        <table><tr><th>顾客</th><th>评分</th><th>评价内容</th><th>日期</th><th>状态</th><th>操作</th></tr><tbody id="reviews-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-settings">
+      <div class="page-title">系统设置</div>
+      <div class="form-card">
+        <div class="form-card-title">餐厅基本信息</div>
+        <div class="form-grid">
+          <div class="fg"><label>餐厅名称</label><input type="text" value="珍粤轩"></div>
+          <div class="fg"><label>联系电话</label><input type="text" value="+855 XX XXX XXXX"></div>
+          <div class="fg"><label>营业时间</label><input type="text" value="11:00 – 22:00"></div>
+          <div class="fg"><label>地址</label><input type="text" value="BKK1, Phnom Penh"></div>
+        </div>
+        <button class="save-btn" onclick="t('设置已保存 ✓')">保存设置</button>
+      </div>
+      <div class="form-card">
+        <div class="form-card-title">修改管理员密码</div>
+        <div class="form-grid">
+          <div class="fg"><label>旧密码</label><input type="password" placeholder="请输入旧密码"></div>
+          <div class="fg"><label>新密码</label><input type="password" placeholder="请输入新密码"></div>
+        </div>
+        <button class="save-btn" onclick="t('密码已更新 ✓')">更新密码</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">新增</div>
+    <div id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn-sec" onclick="closeModal()">取消</button>
+      <button class="btn-pri" id="modal-ok">确认</button>
+    </div>
+  </div>
+</div><script>
+var ADMIN_PW='zhenyuexuan2025';
+var data={
+  bookings:[
+    {id:1,date:'2025-04-02',time:'12:00',name:'陈先生',phone:'855-012-345',pax:'4位',area:'大厅',note:'',status:'confirmed'},
+    {id:2,date:'2025-04-02',time:'18:30',name:'林太太',phone:'855-096-678',pax:'6位',area:'贵宾厅',note:'生日庆祝',status:'pending'},
+    {id:3,date:'2025-04-02',time:'19:00',name:'张总',phone:'855-011-999',pax:'10位',area:'VIP包厢',note:'商务宴请',status:'pending'},
+  ],
+  members:[
+    {id:1,name:'林先生',phone:'855-088-888',birthday:'1985-03-15',points:1250,tier:'gold',date:'2025-01-10'},
+    {id:2,name:'陈小姐',phone:'855-096-678',birthday:'1990-07-22',points:350,tier:'silver',date:'2025-02-05'},
+    {id:3,name:'黄美丽',phone:'855-012-345',birthday:'',points:100,tier:'normal',date:'2025-03-20'},
+  ],
+  menuItems:[
+    {id:1,name:'波士顿龙虾',cat:'海鲜',price:68,desc:'清蒸或蒜蓉，新鲜直送',status:'available'},
+    {id:2,name:'黄油焗花蟹',cat:'海鲜',price:38,desc:'进口黄油慢焗',status:'available'},
+    {id:3,name:'清蒸东星斑',cat:'海鲜',price:45,desc:'豉汁清蒸，鲜甜嫩滑',status:'available'},
+    {id:4,name:'佛跳墙',cat:'汤品',price:88,desc:'名贵食材慢炖，需提前预订',status:'available'},
+    {id:5,name:'虾饺皇',cat:'点心',price:9,desc:'手工现包，晶莹剔透',status:'available'},
+    {id:6,name:'杨枝甘露',cat:'甜品',price:7,desc:'新鲜芒果椰浆',status:'available'},
+  ],
+  promos:[
+    {id:1,title:'开业特惠',type:'限时优惠',start:'2025-01-01',end:'2025-06-30',desc:'消费满$50赠甜品',status:'active'},
+    {id:2,title:'生日优惠',type:'会员专属',start:'2025-01-01',end:'2025-12-31',desc:'生日当月全单九折',status:'active'},
+  ],
+  reviews:[
+    {id:1,name:'陈先生',rating:5,text:'龙虾超新鲜！环境优雅，下次还会来。',date:'2025-03-15',status:'published'},
+    {id:2,name:'林太太',rating:5,text:'生日收到蛋糕，非常感动！菜品精致。',date:'2025-03-20',status:'published'},
+    {id:3,name:'张总',rating:5,text:'包厢适合商务宴请，佛跳墙味道正宗。',date:'2025-03-25',status:'published'},
+  ]
+};
+
+function save(){localStorage.setItem('zyx-data',JSON.stringify(data))}
+function load(){var d=localStorage.getItem('zyx-data');if(d)data=JSON.parse(d)}
+
+function doAdminLogin(){
+  var pw=document.getElementById('adm-pw').value;
+  if(pw===ADMIN_PW){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('main-screen').style.display='block';
+    load();renderAll();updateDash();
+  }else{t('密码错误，请重试')}
+}
+
+function doLogout(){
+  document.getElementById('main-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('adm-pw').value='';
+}
+
+function showPage(pg,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('pg-'+pg).classList.add('active');
+  document.querySelectorAll('.sn-item').forEach(function(n){n.classList.remove('active')});
+  if(el)el.classList.add('active');
+}
+
+function updateDash(){
+  var today=new Date().toISOString().split('T')[0];
+  var todayBooks=data.bookings.filter(function(b){return b.date===today});
+  var pending=data.bookings.filter(function(b){return b.status==='pending'});
+  document.getElementById('s-book').textContent=todayBooks.length;
+  document.getElementById('s-mem').textContent=data.members.length;
+  document.getElementById('s-menu').textContent=data.menuItems.filter(function(m){return m.status==='available'}).length;
+  document.getElementById('pending-count').textContent='待确认 '+pending.length;
+  document.getElementById('dash-bookings').innerHTML=data.bookings.slice(0,4).map(function(b){
+    var badge=b.status==='confirmed'?'<span class="badge bg">已确认</span>':b.status==='cancelled'?'<span class="badge br">已取消</span>':'<span class="badge bo">待确认</span>';
+    return '<tr><td>'+b.time+'</td><td>'+b.name+'</td><td>'+b.pax+'</td><td>'+badge+'</td></tr>';
+  }).join('');
+  var tierMap={gold:'<span class="badge bo">金卡</span>',silver:'<span class="badge bb">银卡</span>',normal:'<span class="badge bgr">普通</span>'};
+  document.getElementById('dash-members').innerHTML=data.members.slice(0,4).map(function(m){
+    return '<tr><td>'+m.name+'</td><td>'+m.phone+'</td><td>'+m.points+'</td><td>'+(tierMap[m.tier]||'')+'</td></tr>';
+  }).join('');
+}
+
+function renderAll(){renderBookings();renderMembers();renderMenu();renderPromos();renderReviews();updateDash()}
+
+function renderBookings(){
+  document.getElementById('bookings-tbody').innerHTML=data.bookings.map(function(b){
+    var badge=b.status==='confirmed'?'<span class="badge bg">已确认</span>':b.status==='cancelled'?'<span class="badge br">已取消</span>':'<span class="badge bo">待确认</span>';
+    var btns=b.status==='pending'?'<button class="action-btn bc" onclick="confirmBook('+b.id+')">确认</button><button class="action-btn bca" onclick="cancelBook('+b.id+')">取消</button>':'<button class="action-btn bca" onclick="delBook('+b.id+')">删除</button>';
+    return '<tr><td>'+b.date+'</td><td>'+b.time+'</td><td>'+b.name+'</td><td>'+b.phone+'</td><td>'+b.pax+'</td><td>'+b.area+'</td><td>'+(b.note||'-')+'</td><td>'+badge+'</td><td>'+btns+'</td></tr>';
+  }).join('');
+}
+
+function confirmBook(id){data.bookings.forEach(function(b){if(b.id===id)b.status='confirmed'});save();renderBookings();updateDash();t('预订已确认 ✓')}
+function cancelBook(id){data.bookings.forEach(function(b){if(b.id===id)b.status='cancelled'});save();renderBookings();updateDash();t('预订已取消')}
+function delBook(id){data.bookings=data.bookings.filter(function(b){return b.id!==id});save();renderBookings();updateDash();t('已删除')}
+
+function renderMembers(){
+  var tierMap={gold:'<span class="badge bo">金卡</span>',silver:'<span class="badge bb">银卡</span>',normal:'<span class="badge bgr">普通</span>'};
+  document.getElementById('members-tbody').innerHTML=data.members.map(function(m){
+    return '<tr><td>'+m.name+'</td><td>'+m.phone+'</td><td>'+(m.birthday||'-')+'</td><td>'+m.points+'</td><td>'+(tierMap[m.tier]||'')+'</td><td>'+m.date+'</td><td><button class="action-btn be" onclick="editPts('+m.id+')">调积分</button><button class="action-btn bca" onclick="delMember('+m.id+')">删除</button></td></tr>';
+  }).join('');
+}
+
+function delMember(id){data.members=data.members.filter(function(m){return m.id!==id});save();renderMembers();updateDash();t('会员已删除')}
+
+function renderMenu(){
+  document.getElementById('menu-tbody').innerHTML=data.menuItems.map(function(m){
+    var s=m.status==='available'?'<span class="badge bg">供应中</span>':'<span class="badge br">已售罄</span>';
+    var tl=m.status==='available'?'标记售罄':'恢复供应';
+    return '<tr><td><strong>'+m.name+'</strong></td><td>'+m.cat+'</td><td>$'+m.price+'</td><td style="max-width:180px;font-size:12px">'+m.desc+'</td><td>'+s+'</td><td><button class="action-btn be" onclick="toggleMenu('+m.id+')">'+tl+'</button><button class="action-btn bca" onclick="delMenu('+m.id+')">删除</button></td></tr>';
+  }).join('');
+}
+
+function toggleMenu(id){data.menuItems.forEach(function(m){if(m.id===id)m.status=m.status==='available'?'soldout':'available'});save();renderMenu();updateDash();t('状态已更新')}
+function delMenu(id){data.menuItems=data.menuItems.filter(function(m){return m.id!==id});save();renderMenu();updateDash();t('菜品已删除')}
+
+function renderPromos(){
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('promos-tbody').innerHTML=data.promos.map(function(p){
+    var active=p.status==='active'&&p.end>=today;
+    var badge=active?'<span class="badge bg">进行中</span>':'<span class="badge bgr">已结束</span>';
+    return '<tr><td><strong>'+p.title+'</strong></td><td>'+p.type+'</td><td>'+p.start+' 至 '+p.end+'</td><td>'+badge+'</td><td><button class="action-btn bca" onclick="delPromo('+p.id+')">删除</button></td></tr>';
+  }).join('');
+}
+
+function addPromo(){
+  var title=document.getElementById('promo-title').value.trim();
+  var start=document.getElementById('promo-start').value;
+  var end=document.getElementById('promo-end').value;
+  if(!title||!start||!end){t('请填写活动名称和日期');return}
+  data.promos.push({id:Date.now(),title:title,type:document.getElementById('promo-type').value,start:start,end:end,desc:document.getElementById('promo-desc').value,status:'active'});
+  save();renderPromos();t('活动已发布 ✓');
+  document.getElementById('promo-title').value='';document.getElementById('promo-desc').value='';
+}
+
+function delPromo(id){data.promos=data.promos.filter(function(p){return p.id!==id});save();renderPromos();t('已删除')}
+
+function renderReviews(){
+  document.getElementById('reviews-tbody').innerHTML=data.reviews.map(function(r){
+    var stars='★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+    var badge=r.status==='published'?'<span class="badge bg">已显示</span>':'<span class="badge bgr">已隐藏</span>';
+    return '<tr><td>'+r.name+'</td><td style="color:#d97706">'+stars+'</td><td style="max-width:200px;font-size:12px">'+r.text+'</td><td>'+r.date+'</td><td>'+badge+'</td><td><button class="action-btn be" onclick="toggleReview('+r.id+')">切换显示</button></td></tr>';
+  }).join('');
+}
+
+function toggleReview(id){data.reviews.forEach(function(r){if(r.id===id)r.status=r.status==='published'?'hidden':'published'});save();renderReviews();t('已更新')}
+
+function addBookingModal(){
+  document.getElementById('modal-title').textContent='新增预订';
+  document.getElementById('modal-body').innerHTML='<div class="form-grid"><div class="fg"><label>姓名</label><input type="text" id="nb-nm" placeholder="客人姓名"></div><div class="fg"><label>电话</label><input type="tel" id="nb-ph" placeholder="联系电话"></div><div class="fg"><label>日期</label><input type="date" id="nb-dt"></div><div class="fg"><label>时间</label><select id="nb-tm"><option>11:30</option><option>12:00</option><option>18:00</option><option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option></select></div><div class="fg"><label>人数</label><select id="nb-px"><option>2位</option><option>4位</option><option>6位</option><option>8位</option><option>10位+</option></select></div><div class="fg"><label>区域</label><select id="nb-ar"><option>大厅</option><option>贵宾厅</option><option>VIP包厢</option></select></div><div class="fg" style="grid-column:1/-1"><label>备注</label><input type="text" id="nb-nt" placeholder="特殊要求"></div></div>';
+  document.getElementById('modal-ok').onclick=function(){
+    var nm=document.getElementById('nb-nm').value.trim();
+    if(!nm){t('请填写客人姓名');return}
+    data.bookings.push({id:Date.now(),date:document.getElementById('nb-dt').value||new Date().toISOString().split('T')[0],time:document.getElementById('nb-tm').value,name:nm,phone:document.getElementById('nb-ph').value,pax:document.getElementById('nb-px').value,area:document.getElementById('nb-ar').value,note:document.getElementById('nb-nt').value,status:'pending'});
+    save();renderBookings();updateDash();closeModal();t('预订已添加 ✓');
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function addMemberModal(){
+  document.getElementById('modal-title').textContent='新增会员';
+  document.getElementById('modal-body').innerHTML='<div class="form-grid"><div class="fg"><label>姓名</label><input type="text" id="nm-nm" placeholder="会员姓名"></div><div class="fg"><label>手机</label><input type="tel" id="nm-ph" placeholder="手机号码"></div><div class="fg"><label>生日</label><input type="date" id="nm-bd"></div><div class="fg"><label>初始积分</label><input type="number" id="nm-pt" value="100"></div></div>';
+  document.getElementById('modal-ok').onclick=function(){
+    var nm=document.getElementById('nm-nm').value.trim();
+    if(!nm){t('请填写姓名');return}
+    data.members.push({id:Date.now(),name:nm,phone:document.getElementById('nm-ph').value,birthday:document.getElementById('nm-bd').value,points:parseInt(document.getElementById('nm-pt').value)||100,tier:'normal',date:new Date().toISOString().split('T')[0]});
+    save();renderMembers();updateDash();closeModal();t('会员已添加 ✓');
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function editPts(id){
+  var m=data.members.find(function(x){return x.id===id});
+  document.getElementById('modal-title').textContent='调整积分 — '+m.name;
+  document.getElementById('modal-body').innerHTML='<div class="fg"><label>当前积分</label><input type="number" id="ep-pt" value="'+m.points+'"></div>';
+  document.getElementById('modal-ok').onclick=function(){
+    m.points=parseInt(document.getElementById('ep-pt').value)||0;
+    m.tier=m.points>=2000?'platinum':m.points>=1000?'gold':m.points>=500?'silver':'normal';
+    save();renderMembers();closeModal();t('积分已更新 ✓');
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function addMenuModal(){
+  document.getElementById('modal-title').textContent='新增菜品';
+  document.getElementById('modal-body').innerHTML='<div class="form-grid"><div class="fg"><label>菜名</label><input type="text" id="nm2-nm" placeholder="菜品名称"></div><div class="fg"><label>分类</label><select id="nm2-cat"><option>海鲜</option><option>粤菜</option><option>汤品</option><option>点心</option><option>甜品</option><option>饮品</option></select></div><div class="fg"><label>价格($)</label><input type="number" id="nm2-pr" placeholder="0"></div><div class="fg" style="grid-column:1/-1"><label>描述</label><input type="text" id="nm2-ds" placeholder="菜品描述"></div></div>';
+  document.getElementById('modal-ok').onclick=function(){
+    var nm=document.getElementById('nm2-nm').value.trim();
+    if(!nm){t('请填写菜名');return}
+    data.menuItems.push({id:Date.now(),name:nm,cat:document.getElementById('nm2-cat').value,price:parseFloat(document.getElementById('nm2-pr').value)||0,desc:document.getElementById('nm2-ds').value,status:'available'});
+    save();renderMenu();updateDash();closeModal();t('菜品已添加 ✓');
+  };
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+function t(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(t._x);t._x=setTimeout(function(){el.classList.remove('show')},2500);
+}
+
+load();
+</script>
+</body>
+</html>d>
